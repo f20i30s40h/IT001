@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>星际科技 - 动态星空项目</title>
+    <title>Star Project -- Open Roblox</title>
     <style>
         * {
             margin: 0;
@@ -10,7 +10,7 @@
             box-sizing: border-box;
         }
         
-        /* 加载进度条容器 - 初始全屏显示 */
+        /* 修复1：加载进度条容器 - 初始全屏显示 */
         #loading-container {
             position: fixed;
             top: 0;
@@ -23,9 +23,9 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            transition: opacity 1s ease;
         }
         
-        /* 进度条外框 */
         .progress-container {
             width: 80%;
             max-width: 500px;
@@ -36,7 +36,6 @@
             overflow: hidden;
         }
         
-        /* 进度条内填充 */
         .progress-bar {
             height: 100%;
             width: 0%;
@@ -45,23 +44,18 @@
             transition: width 0.3s ease;
         }
         
-        /* 进度文字 */
         .loading-text {
             color: #fff;
             font-size: 20px;
             margin-bottom: 20px;
         }
  
-        /* 主页面内容 - 初始隐藏 */
-        body {
-            font-family: 'Arial', sans-serif;
-            color: #fff;
-            overflow-x: hidden;
-            min-height: 100vh;
-            position: relative;
-            display: none; /* 初始不显示 */
+        /* 修复2：主页面内容初始隐藏 */
+        .page-content {
+            opacity: 0;
+            transition: opacity 1.5s ease;
         }
-        
+ 
         /* 星空容器 */
         .stars-container {
             position: fixed;
@@ -71,6 +65,7 @@
             height: 100%;
             z-index: -1;
             overflow: hidden;
+            background: linear-gradient(135deg, #0f2027 30%, #203a43 60%, #2c5364);
         }
         
         /* 星星样式 */
@@ -88,7 +83,27 @@
             background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.8));
             transform: rotate(-45deg);
             animation: shootingStar var(--meteor-duration) linear infinite;
-            opacity: 0;
+            filter: drop-shadow(0 0 5px #fff);
+        }
+        
+        /* 修复3：关键动画帧定义 */
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes shootingStar {
+            0% {
+                opacity: 0;
+                transform: translateX(0) rotate(-45deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(100vw) rotate(-45deg);
+            }
         }
         
         /* 主内容区 */
@@ -111,137 +126,102 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        /* 渐变按钮 */
-        .btn {
-            background: linear-gradient(90deg, #ff8a00, #e52e71);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-        
-        .btn:hover {
-            transform: translateY(-3px);
-        }
-        
-        /* 动画定义 */
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 1; }
-        }
-        
-        @keyframes shootingStar {
-            0% {
-                opacity: 0;
-                transform: rotate(-45deg) translateX(0);
-            }
-            20% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0;
-                transform: rotate(-45deg) translateX(-1000px);
-            }
+        h1 {
+            font-size: 3rem;
+            text-align: center;
+            margin: 2rem 0;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
     </style>
 </head>
 <body>
-    <!-- 加载进度条容器 -->
+    <!-- 加载进度条 -->
     <div id="loading-container">
-        <div class="loading-text">加载中... <span id="progress-percent">0%</span></div>
+        <div class="loading-text">系统初始化中...</div>
         <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
     </div>
  
-    <!-- 动态星空背景容器 -->
-    <div class="stars-container" id="stars-container"></div>
- 
     <!-- 主内容区 -->
-    <div class="content">
-        <div class="card">
-            <h1>欢迎来到星际科技</h1>
-            <p>探索宇宙的奥秘，体验前沿科技的魅力</p>
-            <button class="btn">开始探索</button>
+    <div class="page-content">
+        <div class="stars-container" id="stars-container"></div>
+        <div class="content">
+            <h1>星际科技项目平台</h1>
+            <div class="card">
+                <h2>人工智能解决方案</h2>
+                <p>基于深度学习的智能分析系统，实时处理海量数据...</p>
+            </div>
+            <div class="card">
+                <h2>区块链技术应用</h2>
+                <p>分布式账本技术保障数据安全与交易透明性...</p>
+            </div>
         </div>
     </div>
  
     <script>
-        // 创建星空背景的函数 
-        function createStarfield(container) {
-            const starsCount = 200;
-            const meteorsCount = 3;
+        // ===== 加载进度控制 ===== 
+        const progressBar = document.getElementById('progress-bar');
+        const loadingContainer = document.getElementById('loading-container');
+        const pageContent = document.querySelector('.page-content');
+        
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.floor(Math.random() * 10);
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                
+                // 加载完成后隐藏进度条，显示内容 
+                setTimeout(() => {
+                    loadingContainer.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingContainer.style.display = 'none';
+                        pageContent.style.opacity = '1';
+                        initStarBackground(); // 初始化星空
+                    }, 1000);
+                }, 500);
+            }
+            progressBar.style.width = progress + '%';
+        }, 200);
+ 
+        // ===== 动态星空生成 ===== [7](https://blog.csdn.net/m0_58363221/article/details/119926714)​[13](https://blog.csdn.net/m0_68111267/article/details/149061733)​
+        function initStarBackground() {
+            const container = document.getElementById('stars-container');
             
-            // 创建星星
-            for (let i = 0; i < starsCount; i++) {
+            // 创建星星 
+            for (let i = 0; i < 200; i++) {
                 const star = document.createElement('div');
                 star.classList.add('star');
-                
-                // 随机位置和大小 
                 const size = Math.random() * 3;
-                const posX = Math.random() * 100;
-                const posY = Math.random() * 100;
-                const duration = 1 + Math.random() * 5;
-                
-                star.style.width = `${size}px`;
-                star.style.height = `${size}px`;
-                star.style.left = `${posX}%`;
-                star.style.top = `${posY}%`;
-                star.style.setProperty('--duration', `${duration}s`);
-                
+                Object.assign(star.style, {
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    left: `${Math.random() * 100}vw`,
+                    top: `${Math.random() * 100}vh`,
+                    '--duration': `${Math.random() * 5 + 2}s`
+                });
                 container.appendChild(star);
             }
             
             // 创建流星
-            for (let i = 0; i < meteorsCount; i++) {
+            setInterval(() => {
                 const meteor = document.createElement('div');
                 meteor.classList.add('meteor');
-                
-                // 随机位置和动画时长 
-                const posX = Math.random() * 100;
-                const posY = Math.random() * 100;
-                const duration = 2 + Math.random() * 3;
-                
-                meteor.style.left = `${posX}%`;
-                meteor.style.top = `${posY}%`;
-                meteor.style.setProperty('--meteor-duration', `${duration}s`);
-                meteor.style.animationDelay = `${Math.random() * 5}s`;
-                
+                Object.assign(meteor.style, {
+                    left: `${Math.random() * 30}vw`,
+                    top: `${Math.random() * 50}vh`,
+                    width: `${Math.random() * 100 + 50}px`,
+                    '--meteor-duration': `${Math.random() * 3 + 2}s`
+                });
                 container.appendChild(meteor);
-            }
-        }
- 
-        // 模拟加载进度 
-        function simulateProgress() {
-            let progress = 0;
-            const progressBar = document.getElementById('progress-bar');
-            const progressPercent = document.getElementById('progress-percent');
-            
-            const interval = setInterval(() => {
-                progress += Math.random() * 5;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    
-                    // 加载完成，隐藏加载界面，显示内容
-                    setTimeout(() => {
-                        document.getElementById('loading-container').style.display = 'none';
-                        document.body.style.display = 'block';
-                        // 创建星空背景
-                        createStarfield(document.getElementById('stars-container'));
-                    }, 500);
-                }
                 
-                progressBar.style.width = `${progress}%`;
-                progressPercent.textContent = `${Math.floor(progress)}%`;
-            }, 200);
+                // 流星结束后移除
+                setTimeout(() => {
+                    meteor.remove();
+                }, 5000);
+            }, 2000);
         }
- 
-        // 开始模拟进度 
-        simulateProgress();
     </script>
 </body>
 </html>
