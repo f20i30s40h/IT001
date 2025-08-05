@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,22 +10,13 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
-        body {
-            background: radial-gradient(ellipse at bottom, #0a1929 0%, #0f2027 40%, #203a43 100%);
-            color: #e0f7ff;
-            min-height: 100vh;
-            overflow-x: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
         #loading-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #0a1929 0%, #0f2027 100%);
+            background: #0a1929;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -33,38 +24,31 @@
             z-index: 1000;
             transition: opacity 1s ease;
         }
-        
         .progress-container {
             width: 80%;
             max-width: 500px;
             height: 20px;
-            background-color: rgba(0, 0, 0, 0.3);
+            background-color: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             margin: 20px 0;
             overflow: hidden;
-            box-shadow: 0 0 10px rgba(100, 180, 255, 0.3);
         }
-        
         .progress-bar {
             height: 100%;
             width: 0%;
             background: linear-gradient(90deg, #ff8a00, #e52e71, #22c1c3);
             border-radius: 10px;
             transition: width 0.3s ease;
-            box-shadow: 0 0 15px rgba(226, 46, 113, 0.5);
         }
-        
         .loading-text {
             color: #fff;
             font-size: 20px;
             margin-bottom: 20px;
         }
-        
         .page-content {
             opacity: 0;
             transition: opacity 1.5s ease;
         }
-        
         .stars-container {
             position: fixed;
             top: 0;
@@ -73,60 +57,48 @@
             height: 100%;
             z-index: -1;
             overflow: hidden;
+            background: linear-gradient(135deg, #0f2027 30%, #203a43 60%, #2c5364);
         }
-        
         .star {
             position: absolute;
             border-radius: 50%;
             animation: twinkle var(--duration) infinite ease-in-out;
-            box-shadow: 0 0 6px currentColor;
-            pointer-events: none;
+            box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
         }
-        
         .star.white {
             background-color: #ffffff;
-            color: rgba(255, 255, 255, 0.8);
         }
-        
         .star.yellow {
             background-color: #fff8c9;
-            color: rgba(255, 248, 201, 0.8);
         }
-        
         .star.blue {
             background-color: #c6e2ff;
-            color: rgba(198, 226, 255, 0.8);
         }
-        
         .meteor {
             position: absolute;
             height: 2px;
-            border-radius: 50% 0 0 50%;
+            background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.8));
             transform: rotate(-45deg);
-            animation: shootingStar var(--meteor-duration) linear forwards;
-            filter: drop-shadow(0 0 3px currentColor);
-            pointer-events: none;
+            animation: shootingStar var(--meteor-duration) linear infinite;
+            filter: drop-shadow(0 0 5px #fff);
         }
-        
         @keyframes twinkle {
             0%, 100% { opacity: 0.2; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.3); }
+            50% { opacity: 1; transform: scale(1.2); }
         }
-        
         @keyframes shootingStar {
             0% {
                 opacity: 0;
-                transform: translateX(0) translateY(0) rotate(-45deg) scale(0.5);
+                transform: translateX(0) rotate(-45deg);
             }
             10% {
                 opacity: 1;
             }
             100% {
                 opacity: 0;
-                transform: translateX(100vw) translateY(100vh) rotate(-45deg) scale(1);
+                transform: translateX(100vw) rotate(-45deg);
             }
         }
-        
         .content {
             max-width: 1200px;
             margin: 0 auto;
@@ -134,14 +106,12 @@
             z-index: 10;
             position: relative;
         }
-        
         h1 {
             font-size: 3rem;
             text-align: center;
             margin: 2rem 0;
             text-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
-        
         .card {
             background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
             backdrop-filter: blur(10px);
@@ -151,17 +121,13 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
         .card h2 {
             font-size: 1.8rem;
             margin-bottom: 15px;
-            color: #ffffff;
         }
-        
         .card p {
             font-size: 1.1rem;
             line-height: 1.6;
-            color: rgba(255, 255, 255, 0.8);
         }
     </style>
 </head>
@@ -172,30 +138,25 @@
             <div class="progress-bar" id="progress-bar"></div>
         </div>
     </div>
-    
     <div class="page-content">
         <div class="stars-container" id="stars-container"></div>
         <div class="content">
             <h1>Star Project</h1>
-            
             <div class="card">
                 <h2>Roblox Scripts</h2>
                 <p>It is developing...</p>
             </div>
-            
             <div class="card">
                 <h2>Lua Obfuscator</h2>
                 <p>Made by FishGod(China)...</p>
             </div>
         </div>
     </div>
-    
     <script>
         const progressBar = document.getElementById('progress-bar');
         const loadingContainer = document.getElementById('loading-container');
         const pageContent = document.querySelector('.page-content');
         let progress = 0;
-        
         const interval = setInterval(() => {
             progress += Math.floor(Math.random() * 10);
             if (progress >= 100) {
@@ -213,26 +174,27 @@
             progressBar.style.width = progress + '%';
         }, 200);
         
+        // 修复星星显示问题并增强效果
         function initStarBackground() {
             const container = document.getElementById('stars-container');
             
-            // Create stars (multiple colors)
-            for (let i = 0; i < 800; i++) {
+            // 创建星星（多种颜色）
+            for (let i = 0; i < 500; i++) {
                 const star = document.createElement('div');
                 star.classList.add('star');
                 
-                // Assign random star color
+                // 随机分配星星颜色
                 const starType = Math.random();
                 if (starType < 0.6) {
-                    star.classList.add('white');  // 60% white stars
+                    star.classList.add('white');  // 60% 白色星星
                 } else if (starType < 0.85) {
-                    star.classList.add('yellow'); // 25% yellow stars
+                    star.classList.add('yellow'); // 25% 黄色星星
                 } else {
-                    star.classList.add('blue');   // 15% blue stars
+                    star.classList.add('blue');   // 15% 蓝色星星
                 }
                 
-                const size = Math.random() * 3 + 0.5;
-                const duration = Math.random() * 5 + 3;
+                const size = Math.random() * 2.5 + 0.5;
+                const duration = Math.random() * 5 + 2;
                 
                 Object.assign(star.style, {
                     width: `${size}px`,
@@ -245,52 +207,46 @@
                 container.appendChild(star);
             }
             
-            // Create shooting stars
+            // 创建动态流星
             function createMeteor() {
                 const meteor = document.createElement('div');
                 meteor.classList.add('meteor');
                 
-                // Random meteor color
+                // 随机流星颜色
                 const colors = [
-                    {name: 'white', value: 'rgba(255, 255, 255, 0.9)'},
-                    {name: 'yellow', value: 'rgba(255, 255, 180, 0.9)'},
-                    {name: 'blue', value: 'rgba(180, 220, 255, 0.9)'},
-                    {name: 'orange', value: 'rgba(255, 150, 100, 0.9)'},
-                    {name: 'cyan', value: 'rgba(180, 255, 220, 0.9)'}
+                    'rgba(255, 255, 255, 0.8)',
+                    'rgba(255, 255, 180, 0.8)',
+                    'rgba(180, 220, 255, 0.8)',
+                    'rgba(255, 200, 150, 0.8)',
+                    'rgba(200, 255, 220, 0.8)'
                 ];
+                const color = colors[Math.floor(Math.random() * colors.length)];
                 
-                const colorData = colors[Math.floor(Math.random() * colors.length)];
-                const color = colorData.value;
-                
-                const width = Math.random() * 2 + 1;
-                const length = Math.random() * 150 + 80;
-                const duration = Math.random() * 1.5 + 1;
-                const delay = Math.random() * 3;
+                const width = Math.random() * 1.5 + 0.5;
+                const length = Math.random() * 100 + 50;
+                const duration = Math.random() * 3 + 1;
                 
                 Object.assign(meteor.style, {
                     left: `${Math.random() * 30}vw`,
                     top: `${Math.random() * 30}vh`,
                     width: `${length}px`,
                     height: `${width}px`,
-                    background: `linear-gradient(90deg, transparent, ${color}, ${color})`,
-                    '--meteor-duration': `${duration}s`,
-                    animationDelay: `${delay}s`
+                    background: `linear-gradient(90deg, rgba(255,255,255,0), ${color})`,
+                    '--meteor-duration': `${duration}s`
                 });
                 
                 container.appendChild(meteor);
                 
-                // Remove meteor after animation
+                // 流星消失后移除元素
                 setTimeout(() => {
-                    if (meteor.parentNode) {
-                        meteor.parentNode.removeChild(meteor);
-                    }
-                }, (duration + delay) * 1000);
+                    meteor.remove();
+                }, duration * 1000);
             }
             
-            // Create meteors at intervals
+            // 每1-3秒创建一个新流星
             function meteorInterval() {
                 createMeteor();
-                setTimeout(meteorInterval, Math.random() * 1500 + 500);
+                setTimeout(meteorInterval, Math.random() * 2000 + 1000);
             }
             
             meteorInterval();
